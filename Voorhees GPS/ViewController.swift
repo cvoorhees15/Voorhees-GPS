@@ -8,8 +8,15 @@
 
 import UIKit
 import CoreLocation
+import WebKit
+import MessageUI
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, MFMessageComposeViewControllerDelegate  {
+   
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        
+    }
+    
     
     @IBOutlet weak var distanceLabel: UILabel!
     
@@ -53,10 +60,46 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
+    // Web site implementation
+    @IBOutlet weak var webView: WKWebView!
+    @IBAction func openSite(_ sender: Any) {
+    // if statement validates site being reached
+               
+        if let url = URL(string: "https://tybeeisland.com")
+               {
+        UIApplication.shared.open(url, options: [:])
+               }
+    }
+    
+    // SMS
+    @IBAction func sendSMS(_ sender: Any) {
+        let composeVC = MFMessageComposeViewController()
+               composeVC.messageComposeDelegate = self
+               
+               // Configure the fields of the interface
+               composeVC.recipients = ["3157445877"]
+               composeVC.body = "Hello"
+               
+               // Present the view controller modally
+               if MFMessageComposeViewController.canSendText() {
+                   self.present(composeVC, animated: true, completion: nil)
+               } else {
+                   print("Can't send messages")
+               }
+    }
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        // Load web content
+        let myURL = URL(string:"https://www.apple.com")
+        let myRequest = URLRequest(url: myURL!)
+               webView.load(myRequest)
+        
+        // GPS
         locMan.delegate = self
         locMan.desiredAccuracy = kCLLocationAccuracyThreeKilometers
         locMan.distanceFilter = 1609; // A mile in kilometers
